@@ -135,7 +135,8 @@
       </div>
 
       <div class="status" id="status">待機中 / Ready</div>
-      <audio id="audio" controls preload="metadata" playsinline></audio>
+      <!-- iOS Safari 対策: webkit-playsinline を付与 -->
+      <audio id="audio" controls preload="metadata" playsinline webkit-playsinline></audio>
       <p class="hint">再生されない場合は、下のコントロール（▶）からも再生できます。</p>
     </div>
   </div>
@@ -185,6 +186,20 @@
       status.textContent = text;
     }
 
+    function getBaseDir(){
+      // location.href から「このページのディレクトリ」を作る（GitHub Pages の subpath でも崩れにくい）
+      const href = String(location.href).split('#')[0].split('?')[0];
+      return href.slice(0, href.lastIndexOf('/') + 1);
+    }
+
+    function buildSrc(relPath){
+      // キャッシュ対策のクエリも付与（更新後に古い音声が残るのを防ぐ）
+      const base = getBaseDir();
+      const url = base + relPath;
+      const sep = url.includes('?') ? '&' : '?';
+      return url + sep + 'v=' + Date.now();
+    }
+
     function loadStep(i, keepTime=false){
       currentIndex = Math.max(0, Math.min(steps.length-1, i));
       const step = steps[currentIndex];
@@ -198,7 +213,7 @@
 
       // audio
       const t = audio.currentTime || 0;
-      audio.src = step.file;
+      audio.src = buildSrc(step.file);
       audio.load();
       if (keepTime) audio.currentTime = t;
 
@@ -210,14 +225,25 @@
     }
 
     function tryPlay(){
+      // クリック（ユーザー操作）直後に load→play することで iOS のブロックを避けやすくする
+      audio.load();
       const p = audio.play();
       if (p && typeof p.then === 'function'){
         p.then(()=>setStatus('再生中 / Playing'))
-         .catch(()=>setStatus('再生できませんでした（端末で再生を許可してください） / Playback blocked'));
+         .catch((e)=>{
+           // よくある原因: 404（音声ファイル未配置）/ iOS の再生制限 / 形式非対応
+           const msg = e && e.name ? `${e.name}` : 'Error';
+           setStatus(`再生できませんでした（${msg}）。音声ファイルがアップロードされているか確認してください / Playback blocked`);
+         });
       } else {
         setStatus('再生中 / Playing');
       }
     }
+
+    audio.addEventListener('error', () => {
+      // 404 の場合などは audio.error が入る
+      setStatus('音声を読み込めません（ファイル未配置/パス違いの可能性） / Audio load error');
+    });
 
     // init options
     steps.forEach(step => {
