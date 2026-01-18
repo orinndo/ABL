@@ -1,39 +1,286 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>ABL前（Before ABL）音声ガイド</title>
-<style>
-body { font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Segoe UI", sans-serif; margin: 18px; line-height: 1.6; }
-h1 { font-size: 22px; margin-bottom: 6px; }
-.panel { border: 1px solid #ddd; border-radius: 12px; padding: 14px; }
-.jp { font-size: 22px; font-weight: 700; }
-.en { font-size: 18px; margin-top: 10px; }
-button { margin: 6px 4px; padding: 10px 14px; font-size: 16px; border-radius: 10px; border: 1px solid #ccc; }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ABL前（Before ABL）Audio Guide</title>
+  <style>
+    :root{
+      --bg:#ffffff;
+      --text:#111827;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --panel:#f9fafb;
+      --primary:#2563eb;
+      --btn:#f3f4f6;
+      --btnText:#111827;
+      --shadow:0 1px 2px rgba(0,0,0,.05);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      color:var(--text);
+      background:var(--bg);
+    }
+    .wrap{max-width:1080px;margin:0 auto;padding:26px 18px 34px;}
+    h1{margin:0 0 10px;font-size:34px;letter-spacing:.2px;}
+    .note{margin:0 0 18px;color:var(--muted);font-size:15px;}
+
+    .panel{
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      background:var(--bg);
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .topRow{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+    .pill{
+      display:inline-flex;align-items:center;justify-content:center;
+      padding:10px 14px;border-radius:999px;
+      background:var(--btn);
+      color:var(--btnText);
+      border:1px solid var(--line);
+      font-weight:600;
+      font-size:14px;
+    }
+
+    .selectorRow{display:flex;gap:12px;align-items:center;}
+    select{
+      width:100%;
+      padding:12px 14px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+      font-size:16px;
+      outline:none;
+    }
+
+    .navBtns{display:flex;gap:10px;align-items:center;}
+    .navBtn{
+      min-width:82px;
+      padding:11px 14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-weight:700;
+      font-size:15px;
+      cursor:pointer;
+    }
+    .navBtn:disabled{opacity:.45;cursor:not-allowed;}
+    .navBtn.primary{color:var(--primary);}
+
+    .label{margin:14px 0 6px;color:var(--muted);font-size:14px;}
+    .jp{font-size:32px;font-weight:800;margin:0 0 12px;line-height:1.25;}
+    .en{font-size:22px;font-weight:600;margin:0 0 16px;line-height:1.35;}
+
+    .btnRow{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0 12px;}
+    .btn{
+      display:inline-flex;gap:10px;align-items:center;justify-content:center;
+      padding:12px 18px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#fff;
+      font-weight:800;
+      font-size:18px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .btn.play{background:#eaf1ff;border-color:#cfe0ff;color:var(--primary);}
+
+    .status{margin:10px 0 8px;color:var(--muted);font-weight:700;font-size:14px;}
+    audio{width:100%;}
+
+    .hint{margin:10px 0 0;color:var(--muted);font-size:13px;}
+
+    @media (max-width:640px){
+      h1{font-size:26px;}
+      .jp{font-size:26px;}
+      .en{font-size:18px;}
+      .navBtn{min-width:74px;}
+      .btn{font-size:16px;}
+    }
+  </style>
 </head>
 <body>
-<h1>ABL前（Before ABL）音声ガイド</h1>
+  <div class="wrap">
+    <h1>ABL前（Before ABL）音声ガイド</h1>
+    <p class="note">※必ず GitHub Pages（https://○○.github.io/...）のURLで開いてください。iPhoneでは自動再生できないため、下の再生ボタンを押してください。</p>
 
-<div class="panel">
-<p class="jp">この検査では、可能であればうつ伏せになっていただきたいです。</p>
-<p class="en">During this test, we'd like you to lie on your stomach if possible.</p>
+    <div class="panel">
+      <div class="topRow">
+        <div class="pill">ステップ選択</div>
+      </div>
 
-<button onclick="playAudio()">▶ 再生 / Play</button>
-<button onclick="pauseAudio()">⏸ 一時停止 / Pause</button>
-<button onclick="replayAudio()">🔄 もう一度 / Replay</button>
+      <div class="selectorRow">
+        <select id="stepSelect" aria-label="ステップ選択"></select>
+        <div class="navBtns">
+          <button class="navBtn" id="prevBtn">← 前</button>
+          <button class="navBtn primary" id="nextBtn">次 →</button>
+        </div>
+      </div>
 
-<audio id="audio" controls preload="auto">
-  <source src="audio/01.mp3" type="audio/mpeg">
-</audio>
-</div>
+      <div class="label">日本語（内容）</div>
+      <p class="jp" id="jpText"></p>
 
-<script>
-const audio = document.getElementById("audio");
-function playAudio(){ audio.play(); }
-function pauseAudio(){ audio.pause(); }
-function replayAudio(){ audio.currentTime = 0; audio.play(); }
-</script>
+      <div class="label">English（Script）</div>
+      <p class="en" id="enText"></p>
+
+      <div class="btnRow">
+        <button class="btn play" id="playBtn">▶ 再生 / Play</button>
+        <button class="btn" id="pauseBtn">⏸ 一時停止 / Pause</button>
+        <button class="btn" id="replayBtn">↺ もう一度 / Replay</button>
+      </div>
+
+      <div class="status" id="status">待機中 / Ready</div>
+      <!-- iOS Safari 対策: webkit-playsinline を付与 -->
+      <audio id="audio" controls preload="metadata" playsinline webkit-playsinline></audio>
+      <p class="hint">再生されない場合は、下のコントロール（▶）からも再生できます。</p>
+    </div>
+  </div>
+
+  <script>
+    // ABL前：音声（English）＋日本語訳
+    const steps = [
+      { no: 1, jp: "この検査では、可能であればうつ伏せになっていただきたいです。", en: "During this test, we’d like you to lie on your stomach if possible.", file: "audio/01.mp3" },
+      { no: 2, jp: "もしそれがつらければ、仰向けでも大丈夫です。", en: "If that’s too uncomfortable, you can also lie on your back if it feels easier.", file: "audio/02.mp3" },
+      { no: 3, jp: "どちらがよろしいですか？", en: "Which would you prefer?", file: "audio/03.mp3" },
+      { no: 4, jp: "少しだけ、うつ伏せを試してみてもらえますか？", en: "Could you try lying on your stomach for a moment?", file: "audio/04.mp3" },
+      { no: 5, jp: "ベッドにうつ伏せで寝てください。頭はここ、足はあちらです。", en: "Please lie on your stomach on the bed. Your head goes here, and your feet go there.", file: "audio/05.mp3" },
+      { no: 6, jp: "この姿勢で顔は楽ですか？呼吸は大丈夫ですか？", en: "Is your face comfortable in this position? Are you breathing okay?", file: "audio/06.mp3" },
+      { no: 7, jp: "息苦しければ、頭を左右どちらかに向けても大丈夫です。", en: "If it’s hard to breathe, you can turn your head to either side.", file: "audio/07.mp3" },
+      { no: 8, jp: "今の感じはいかがですか？", en: "How does it feel now?", file: "audio/08.mp3" },
+      { no: 9, jp: "本番はこの姿勢で撮影しますが、よろしいですか？", en: "We’ll do the actual scan in this position, is that okay?", file: "audio/09.mp3" },
+      { no: 10, jp: "では、いったんベッドに座っていただけますか？血圧を測って、背中に心電図の電極を貼ります。", en: "Okay, then could you sit up on the bed for a moment, please? I’ll check your blood pressure and put the ECG electrodes on your back.", file: "audio/10.mp3" },
+      { no: 11, jp: "ありがとうございます。先ほどと同じように、もう一度うつ伏せになってください。", en: "All right. Please lie on your stomach again, just like before.", file: "audio/11.mp3" },
+      { no: 12, jp: "撮影中は息止めを約10秒お願いします。吐いた後に1回、吸った後に1回です。", en: "During the scan, you will be asked to hold your breath for about 10 seconds — once after breathing out, and once after breathing in.", file: "audio/12.mp3" },
+      { no: 13, jp: "では一緒に練習しましょう。", en: "Let’s practice together now.", file: "audio/13.mp3" },
+      { no: 14, jp: "大きく吸って、吐いて、止めてください。", en: "Take a deep breath, breathe out, and hold it.", file: "audio/14.mp3" },
+      { no: 15, jp: "楽にしてください。", en: "You can relax now.", file: "audio/15.mp3" },
+      { no: 16, jp: "今のように、息を止めたら体を動かさないでください。", en: "As you did just now, please stay still after you hold your breath.", file: "audio/16.mp3" },
+      { no: 17, jp: "これから撮影を始めます。", en: "We’ll start the scan now.", file: "audio/17.mp3" },
+    ];
+
+    const $ = (id) => document.getElementById(id);
+    const sel = $("stepSelect");
+    const jpText = $("jpText");
+    const enText = $("enText");
+    const audio = $("audio");
+    const status = $("status");
+    const prevBtn = $("prevBtn");
+    const nextBtn = $("nextBtn");
+    const playBtn = $("playBtn");
+    const pauseBtn = $("pauseBtn");
+    const replayBtn = $("replayBtn");
+
+    let currentIndex = 0;
+
+    function formatLabel(step){
+      const nn = String(step.no).padStart(2,'0');
+      return `${nn}. ${step.jp}`;
+    }
+
+    function setStatus(text){
+      status.textContent = text;
+    }
+
+    function getBaseDir(){
+      // location.href から「このページのディレクトリ」を作る（GitHub Pages の subpath でも崩れにくい）
+      const href = String(location.href).split('#')[0].split('?')[0];
+      return href.slice(0, href.lastIndexOf('/') + 1);
+    }
+
+    function buildSrc(relPath){
+      // キャッシュ対策のクエリも付与（更新後に古い音声が残るのを防ぐ）
+      const base = getBaseDir();
+      const url = base + relPath;
+      const sep = url.includes('?') ? '&' : '?';
+      return url + sep + 'v=' + Date.now();
+    }
+
+    function loadStep(i, keepTime=false){
+      currentIndex = Math.max(0, Math.min(steps.length-1, i));
+      const step = steps[currentIndex];
+
+      // dropdown
+      sel.value = String(step.no);
+
+      // texts
+      jpText.textContent = step.jp;
+      enText.textContent = step.en;
+
+      // audio
+      const t = audio.currentTime || 0;
+      audio.src = buildSrc(step.file);
+      audio.load();
+      if (keepTime) audio.currentTime = t;
+
+      // nav buttons
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex === steps.length - 1;
+
+      setStatus('待機中 / Ready');
+    }
+
+    function tryPlay(){
+      // クリック（ユーザー操作）直後に load→play することで iOS のブロックを避けやすくする
+      audio.load();
+      const p = audio.play();
+      if (p && typeof p.then === 'function'){
+        p.then(()=>setStatus('再生中 / Playing'))
+         .catch((e)=>{
+           // よくある原因: 404（音声ファイル未配置）/ iOS の再生制限 / 形式非対応
+           const msg = e && e.name ? `${e.name}` : 'Error';
+           setStatus(`再生できませんでした（${msg}）。音声ファイルがアップロードされているか確認してください / Playback blocked`);
+         });
+      } else {
+        setStatus('再生中 / Playing');
+      }
+    }
+
+    audio.addEventListener('error', () => {
+      // 404 の場合などは audio.error が入る
+      setStatus('音声を読み込めません（ファイル未配置/パス違いの可能性） / Audio load error');
+    });
+
+    // init options
+    steps.forEach(step => {
+      const opt = document.createElement('option');
+      opt.value = String(step.no);
+      opt.textContent = formatLabel(step);
+      sel.appendChild(opt);
+    });
+
+    // events
+    sel.addEventListener('change', () => {
+      const no = Number(sel.value);
+      const idx = steps.findIndex(s => s.no === no);
+      loadStep(idx);
+    });
+
+    prevBtn.addEventListener('click', () => loadStep(currentIndex - 1));
+    nextBtn.addEventListener('click', () => loadStep(currentIndex + 1));
+
+    playBtn.addEventListener('click', tryPlay);
+    pauseBtn.addEventListener('click', () => {
+      audio.pause();
+      setStatus('一時停止 / Paused');
+    });
+    replayBtn.addEventListener('click', () => {
+      audio.currentTime = 0;
+      tryPlay();
+    });
+
+    audio.addEventListener('play', () => setStatus('再生中 / Playing'));
+    audio.addEventListener('pause', () => {
+      if (!audio.ended) setStatus('一時停止 / Paused');
+    });
+    audio.addEventListener('ended', () => setStatus('再生終了 / Finished'));
+
+    // load first
+    loadStep(0);
+  </script>
 </body>
 </html>
