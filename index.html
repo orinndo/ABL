@@ -1,17 +1,39 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ABL前 Audio Guide</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>ABL前（Before ABL）音声ガイド</title>
 <style>
-body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans",sans-serif;margin:18px;line-height:1.6}
-.jp{font-size:18px}
+body { font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Segoe UI", sans-serif; margin: 18px; line-height: 1.6; }
+h1 { font-size: 22px; margin-bottom: 6px; }
+.panel { border: 1px solid #ddd; border-radius: 12px; padding: 14px; }
+.jp { font-size: 22px; font-weight: 700; }
+.en { font-size: 18px; margin-top: 10px; }
+button { margin: 6px 4px; padding: 10px 14px; font-size: 16px; border-radius: 10px; border: 1px solid #ccc; }
 </style>
 </head>
 <body>
-<h1>ABL前</h1>
+<h1>ABL前（Before ABL）音声ガイド</h1>
+
+<div class="panel">
 <p class="jp">この検査では、可能であればうつ伏せになっていただきたいです。</p>
-<audio controls src="audio/01.mp3"></audio>
+<p class="en">During this test, we'd like you to lie on your stomach if possible.</p>
+
+<button onclick="playAudio()">▶ 再生 / Play</button>
+<button onclick="pauseAudio()">⏸ 一時停止 / Pause</button>
+<button onclick="replayAudio()">🔄 もう一度 / Replay</button>
+
+<audio id="audio" controls preload="auto">
+  <source src="audio/01.mp3" type="audio/mpeg">
+</audio>
+</div>
+
+<script>
+const audio = document.getElementById("audio");
+function playAudio(){ audio.play(); }
+function pauseAudio(){ audio.pause(); }
+function replayAudio(){ audio.currentTime = 0; audio.play(); }
+</script>
 </body>
 </html>
